@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIMI TRANSPORT LLC</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --light-bg: #f0f0f0;
+            --dark-bg: #1e1e1e;
+            --light-card: #ffffff;
+            --dark-card: #333333;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: #000;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: #ffffff;
+        }
+
+        header {
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 24px;
+        }
+
+        .controls {
+            margin: 20px;
+            text-align: center;
+        }
+
+        .controls button {
+            margin: 10px 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+            background-color: white;
+            color: var(--primary-color);
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .controls button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 300px;
+            height: 200px;
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .flip-card-front img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+
+        .flip-card-back {
+            background-color: var(--light-card);
+            color: black;
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            text-align: justify;
+        }
+
+        .dark-mode .flip-card-back {
+            background-color: var(--dark-card);
+            color: white;
+        }
+
+        footer {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #ccc;
+        }
+
+        .dark-mode footer {
+            background-color: #222222;
+            color: white;
+            border-top: 2px solid #555;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto 20px auto;
+        }
+
+        form input, form textarea {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form button {
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .footer-text {
+            margin-top: 10px;
+        }
+
+        /* Modal Video */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .modal-content video {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .flip-card {
+                width: 90%;
+                height: 200px;
+            }
+            .controls button {
+                display: block;
+                margin: 10px auto;
+            }
+            form {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .banner {
+                height: 150px;
+            }
+            .title {
+                font-size: 18px;
+                padding: 5px 10px;
+            }
+            .flip-card {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con Banner -->
+    <header>
+        <img src="banner.png" alt="Banner Mimi Transport" class="banner">
+        <div class="title">MIMI TRANSPORT LLC</div>
+    </header>
+
+    <!-- Controles -->
+    <div class="controls">
+        <button id="langBtn" onclick="toggleLanguage()"><span id="langIcon">🇺🇸</span> English</button>
+        <button id="modeBtn" onclick="toggleMode()"><span id="modeIcon">🌞</span> Light</button>
+        <button onclick="openModal()">🎥 Promo Video</button>
+    </div>
+
+    <!-- Contenedor de Tarjetas -->
+    <div class="container">
+        <!-- Tarjeta Misión -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="img1.png" alt="Mission">
+                </div>
+                <div class="flip-card-back" id="mission">
+                    <!-- Texto dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Seguridad -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="img2.png" alt="Safety">
+                </div>
+                <div class="flip-card-back" id="safety">
+                    <!-- Texto dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Servicios -->
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="img3.png" alt="Services">
+                </div>
+                <div class="flip-card-back" id="services">
+                    <!-- Texto dinámico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Contacto -->
+    <footer>
+        <h2>Contact Us</h2>
+        <form>
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email*" required>
+            <textarea rows="4" placeholder="Message"></textarea>
+            <button type="submit">Send</button>
+        </form>
+        <p>9465 Counselors Row suite 200, Indianapolis, IN 46240, United States</p>
+        <p>Email: Infoadmi@mimitransport.com</p>
+        <p>Phone: 3177594704 - 3175998603</p>
+        <div class="footer-text">
+            <p>© 2025 Mimi Transport LLC - All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Video -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <video id="promoVideo" controls autoplay>
+                <source src="mimi transport llc.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        let isSpanish = false;
+        let isDarkMode = false;
+
+        const content = {
+            en: {
+                mission: `<h2>Mission</h2><p>We are a trucking company located in Indiana, dedicated to providing reliable and efficient freight transportation services. Trust Mimi Transport LLC for your transportation needs in Indiana and beyond.</p>`,
+                safety: `<h2>Safety</h2><p>Safety is our top priority. We have highly trained drivers and strict maintenance to ensure safe operations. We care about the safety of our team and cargo.</p>`,
+                services: `<h2>Services</h2><p>We specialize in local and interstate container transportation, offering careful handling, safe delivery, and real-time tracking. Trust us for professional moving services.</p>`
+            },
+            es: {
+                mission: `<h2>Misión</h2><p>Somos una empresa de transporte ubicada en Indiana, dedicada a brindar servicios de transporte de carga confiables y eficientes. Confíe en Mimi Transport LLC para sus necesidades de transporte en Indiana y más allá.</p>`,
+                safety: `<h2>Seguridad</h2><p>La seguridad es nuestra prioridad. Contamos con conductores altamente capacitados y mantenimiento riguroso para garantizar operaciones seguras. Nos importa la seguridad de nuestro equipo y la carga.</p>`,
+                services: `<h2>Servicios</h2><p>Nos especializamos en el transporte de contenedores locales e interestatales, ofreciendo manejo cuidadoso, entrega segura y seguimiento en tiempo real. Confíe en nosotros para servicios profesionales de mudanza.</p>`
+            }
+        };
+
+        function loadContent() {
+            const lang = isSpanish ? 'es' : 'en';
+            document.getElementById('mission').innerHTML = content[lang].mission;
+            document.getElementById('safety').innerHTML = content[lang].safety;
+            document.getElementById('services').innerHTML = content[lang].services;
+
+            const langBtn = document.getElementById('langBtn');
+            if (isSpanish) {
+                langBtn.classList.add('active');
+                langBtn.innerHTML = '<span id="langIcon">🇪🇸</span> Español';
+            } else {
+                langBtn.classList.remove('active');
+                langBtn.innerHTML = '<span id="langIcon">🇺🇸</span> English';
+            }
+        }
+
+        function toggleLanguage() {
+            isSpanish = !isSpanish;
+            loadContent();
+        }
+
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+            isDarkMode = !isDarkMode;
+
+            const modeBtn = document.getElementById('modeBtn');
+            if (isDarkMode) {
+                modeBtn.classList.add('active');
+                modeBtn.innerHTML = '<span id="modeIcon">🌙</span> Dark';
+            } else {
+                modeBtn.classList.remove('active');
+                modeBtn.innerHTML = '<span id="modeIcon">🌞</span> Light';
+            }
+        }
+
+        function openModal() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('promoVideo');
+            modal.style.display = 'block';
+            video.currentTime = 0;
+            video.play();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('promoVideo');
+            video.pause();
+            modal.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent();
+
+            const video = document.getElementById('promoVideo');
+            video.addEventListener('ended', () => {
+                closeModal();
+            });
+        });
+    </script>
+</body>
+</html>
